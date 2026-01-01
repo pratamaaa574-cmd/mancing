@@ -303,7 +303,7 @@ end
 --========================
 -- SIDEBAR ORDER
 --========================
-leftBtn("Fishing",50,FishingPage)
+leftBtn("🐟  Fishing",50,FishingPage)
 leftBtn("Automatically",90,AutoPage)
 leftBtn("Trading",130,TradingPage)
 leftBtn("Teleport",170,TeleportPage)
