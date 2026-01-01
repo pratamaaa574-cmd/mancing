@@ -116,6 +116,78 @@ title.BackgroundColor3 = Color3.fromRGB(255,20,147)
 title.BorderSizePixel = 0
 
 --========================
+-- DRAG GUI
+--========================
+    local dragging, dragStart, startPos
+
+    title.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            dragStart = input.Position
+            startPos = main.Position
+        end
+    end)
+
+    title.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = false
+        end
+    end)
+
+    RunService.InputChanged:Connect(function(input)
+        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            local delta = input.Position - dragStart
+            main.Position = UDim2.new(
+                startPos.X.Scale,
+                startPos.X.Offset + delta.X,
+                startPos.Y.Scale,
+                startPos.Y.Offset + delta.Y
+            )
+        end
+    end)
+end
+
+--========================
+-- MINIMIZE (—) + CLOSE (X)
+-=========================
+local minBtn = Instance.new("TextButton", title)
+minBtn.Size = UDim2.fromOffset(35,35)
+minBtn.Position = UDim2.new(1,-80,0,7)
+minBtn.Text = "—"
+minBtn.Font = Enum.Font.GothamBold
+minBtn.TextSize = 24
+minBtn.TextColor3 = Color3.new(1,1,1)
+minBtn.BackgroundTransparency = 1
+
+-- CLOSE
+local closeBtn = Instance.new("TextButton", title)
+closeBtn.Size = UDim2.fromOffset(35,35)
+closeBtn.Position = UDim2.new(1,-40,0,7)
+closeBtn.Text = "X"
+closeBtn.Font = Enum.Font.GothamBold
+closeBtn.TextSize = 20
+closeBtn.TextColor3 = Color3.new(1,1,1)
+closeBtn.BackgroundTransparency = 1
+
+local minimized = false
+local fullSize = main.Size
+
+minBtn.MouseButton1Click:Connect(function()
+    minimized = not minimized
+    if minimized then
+        right.Visible = false
+        main.Size = UDim2.fromOffset(620,50)
+    else
+        right.Visible = true
+        main.Size = fullSize
+    end
+end)
+
+closeBtn.MouseButton1Click:Connect(function()
+    gui.Enabled = false
+end)
+
+--========================
 -- HELPERS
 --========================
 local function clearRight()
