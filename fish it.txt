@@ -1,0 +1,248 @@
+--====================================================
+-- BENJAMIN | FISH IT SCRIPT
+-- THEME : PINK + WHITE
+-- WITH LOADING SCREEN
+-- DELTA READY
+--====================================================
+
+--========================
+-- SERVICES
+--========================
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local VirtualUser = game:GetService("VirtualUser")
+local TweenService = game:GetService("TweenService")
+
+local player = Players.LocalPlayer
+local char = player.Character or player.CharacterAdded:Wait()
+player.CharacterAdded:Connect(function(c) char = c end)
+
+--========================
+-- LOADING SCREEN
+--========================
+local loadGui = Instance.new("ScreenGui", player.PlayerGui)
+loadGui.Name = "BenjaminLoading"
+loadGui.ResetOnSpawn = false
+
+local loadFrame = Instance.new("Frame", loadGui)
+loadFrame.Size = UDim2.fromScale(1,1)
+loadFrame.BackgroundColor3 = Color3.fromRGB(255,105,180)
+
+local loadText = Instance.new("TextLabel", loadFrame)
+loadText.Size = UDim2.fromOffset(400,80)
+loadText.Position = UDim2.fromScale(0.5,0.45)
+loadText.AnchorPoint = Vector2.new(0.5,0.5)
+loadText.Text = "BENJAMIN"
+loadText.Font = Enum.Font.GothamBold
+loadText.TextSize = 40
+loadText.TextColor3 = Color3.new(1,1,1)
+loadText.BackgroundTransparency = 1
+
+local subText = Instance.new("TextLabel", loadFrame)
+subText.Size = UDim2.fromOffset(400,40)
+subText.Position = UDim2.fromScale(0.5,0.53)
+subText.AnchorPoint = Vector2.new(0.5,0.5)
+subText.Text = "Loading Script..."
+subText.Font = Enum.Font.Gotham
+subText.TextSize = 18
+subText.TextColor3 = Color3.new(1,1,1)
+subText.BackgroundTransparency = 1
+
+task.wait(1.5)
+
+TweenService:Create(loadFrame,TweenInfo.new(1),
+    {BackgroundTransparency = 1}):Play()
+TweenService:Create(loadText,TweenInfo.new(1),
+    {TextTransparency = 1}):Play()
+TweenService:Create(subText,TweenInfo.new(1),
+    {TextTransparency = 1}):Play()
+
+task.wait(1)
+loadGui:Destroy()
+
+--========================
+-- GLOBAL STATE
+--========================
+_G.AutoFish = false
+_G.FishMode = "None"
+_G.AutoSell = false
+_G.AutoBuyWeather = false
+_G.WalkOnWater = false
+_G.Fly = false
+_G.AntiAFK = true
+
+--========================
+-- GUI MAIN
+--========================
+local gui = Instance.new("ScreenGui", player.PlayerGui)
+gui.Name = "BENJAMIN_GUI"
+gui.ResetOnSpawn = false
+
+local main = Instance.new("Frame", gui)
+main.Size = UDim2.fromOffset(620,380)
+main.Position = UDim2.fromScale(0.5,0.5)
+main.AnchorPoint = Vector2.new(0.5,0.5)
+main.BackgroundColor3 = Color3.fromRGB(255,182,193)
+
+local left = Instance.new("Frame", main)
+left.Size = UDim2.fromOffset(170,380)
+left.BackgroundColor3 = Color3.fromRGB(255,105,180)
+
+local right = Instance.new("Frame", main)
+right.Position = UDim2.fromOffset(170,0)
+right.Size = UDim2.fromOffset(450,380)
+right.BackgroundColor3 = Color3.fromRGB(255,192,203)
+
+--========================
+-- TITLE
+--========================
+local title = Instance.new("TextLabel", left)
+title.Size = UDim2.new(1,0,0,50)
+title.Text = "BENJAMIN"
+title.Font = Enum.Font.GothamBold
+title.TextSize = 24
+title.TextColor3 = Color3.new(1,1,1)
+title.BackgroundColor3 = Color3.fromRGB(255,20,147)
+title.BorderSizePixel = 0
+
+--========================
+-- HELPERS
+--========================
+local function clearRight()
+    for _,v in pairs(right:GetChildren()) do
+        if v:IsA("TextButton") or v:IsA("TextLabel") then
+            v:Destroy()
+        end
+    end
+end
+
+local function btn(text,y,cb)
+    local b = Instance.new("TextButton", right)
+    b.Size = UDim2.new(1,-20,0,30)
+    b.Position = UDim2.fromOffset(10,y)
+    b.Text = text
+    b.BackgroundColor3 = Color3.fromRGB(255,105,180)
+    b.TextColor3 = Color3.new(1,1,1)
+    b.BorderSizePixel = 0
+    b.MouseButton1Click:Connect(cb)
+end
+
+local function leftBtn(text,y,cb)
+    local b = Instance.new("TextButton", left)
+    b.Size = UDim2.new(1,0,0,40)
+    b.Position = UDim2.fromOffset(0,y)
+    b.Text = text
+    b.BackgroundColor3 = Color3.fromRGB(255,20,147)
+    b.TextColor3 = Color3.new(1,1,1)
+    b.BorderSizePixel = 0
+    b.MouseButton1Click:Connect(cb)
+end
+
+--========================
+-- ISLAND SCAN
+--========================
+local function GetIslands()
+    local t = {}
+    for _,v in pairs(workspace:GetChildren()) do
+        if v:IsA("Model") then
+            local p = v:FindFirstChildWhichIsA("BasePart",true)
+            if p then
+                table.insert(t,{v.Name,p.CFrame})
+            end
+        end
+    end
+    return t
+end
+
+--========================
+-- PAGES
+--========================
+function FishingPage()
+    clearRight()
+    btn("Auto Fishing : "..tostring(_G.AutoFish),20,function()
+        _G.AutoFish = not _G.AutoFish
+        FishingPage()
+    end)
+    btn("Legit Mode",60,function() _G.FishMode="Legit" end)
+    btn("Instant Mode",100,function() _G.FishMode="Instant" end)
+    btn("Blatant Mode",140,function() _G.FishMode="Blatant" end)
+end
+
+function AutoPage()
+    clearRight()
+    btn("Auto Sell : "..tostring(_G.AutoSell),20,function()
+        _G.AutoSell = not _G.AutoSell
+        AutoPage()
+    end)
+    btn("Auto Buy Weather : "..tostring(_G.AutoBuyWeather),60,function()
+        _G.AutoBuyWeather = not _G.AutoBuyWeather
+        AutoPage()
+    end)
+end
+
+function TradingPage()
+    clearRight()
+    btn("Trading (soon)",20,function() end)
+end
+
+function TeleportPage()
+    clearRight()
+    local y = 20
+    for _,i in pairs(GetIslands()) do
+        btn("TP : "..i[1],y,function()
+            if char and char:FindFirstChild("HumanoidRootPart") then
+                char:PivotTo(i[2] + Vector3.new(0,5,0))
+            end
+        end)
+        y += 35
+    end
+end
+
+function QuestPage()
+    clearRight()
+    btn("Jungle Artifact Quest",20,function() end)
+end
+
+function SettingPage()
+    clearRight()
+    btn("Anti AFK : "..tostring(_G.AntiAFK),20,function()
+        _G.AntiAFK = not _G.AntiAFK
+        SettingPage()
+    end)
+    btn("Walk On Water : "..tostring(_G.WalkOnWater),60,function()
+        _G.WalkOnWater = not _G.WalkOnWater
+        SettingPage()
+    end)
+    btn("Fly (visual)",100,function()
+        _G.Fly = not _G.Fly
+    end)
+end
+
+--========================
+-- SIDEBAR ORDER
+--========================
+leftBtn("Fishing",50,FishingPage)
+leftBtn("Automatically",90,AutoPage)
+leftBtn("Trading",130,TradingPage)
+leftBtn("Teleport",170,TeleportPage)
+leftBtn("Quest",210,QuestPage)
+leftBtn("Setting",250,SettingPage)
+
+FishingPage()
+
+--========================
+-- SYSTEM
+--========================
+player.Idled:Connect(function()
+    if _G.AntiAFK then
+        VirtualUser:Button2Down(Vector2.new(),workspace.CurrentCamera.CFrame)
+        task.wait(1)
+        VirtualUser:Button2Up(Vector2.new(),workspace.CurrentCamera.CFrame)
+    end
+end)
+
+RunService.Stepped:Connect(function()
+    if _G.WalkOnWater and char and char:FindFirstChild("HumanoidRootPart") then
+        char.HumanoidRootPart.Velocity = Vector3.new(0,2,0)
+    end
+end)
