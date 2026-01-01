@@ -94,6 +94,16 @@ right.Size = UDim2.fromOffset(450,380)
 right.BackgroundColor3 = Color3.fromRGB(255,192,203)
 
 --========================
+-- UI ROUND + STROKE
+--========================
+local corner = Instance.new("UICorner", main)
+corner.CornerRadius = UDim.new(0,12)
+
+local stroke = Instance.new("UIStroke", main)
+stroke.Color = Color3.fromRGB(255,105,180)
+stroke.Thickness = 2
+
+--========================
 -- TITLE
 --========================
 local title = Instance.new("TextLabel", left)
